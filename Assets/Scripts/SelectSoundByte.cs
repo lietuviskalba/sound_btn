@@ -10,17 +10,36 @@ public class SelectSoundByte : MonoBehaviour {
 
     public Text btnName;
 
+    private GameObject[] menuUI;
+    private GameObject[] ingameMenuUI;
+
     public GameObject soundButtons;
     public GameObject backButton;
     public GameObject tint;
     public GameObject txtTint;
 
-    void Start () {
-        // Store all the sounds from the game obj sound board childrens
-        sounds = GetComponentsInChildren<AudioSource>();
+
+    void Start () {      
+        sounds = GetComponentsInChildren<AudioSource>(); // Store all the sounds
         currSound = sounds[0]; //Set a default sound just in case
-        backButton.SetActive(false);
-        txtTint.SetActive(false);
+
+        menuUI = GameObject.FindGameObjectsWithTag("Menu");
+        ingameMenuUI = GameObject.FindGameObjectsWithTag("IngameMenu");
+
+        SwitchMenuUI(false, "gameMenu"); // turn off the game menu at start
+    }
+
+    public void SwitchMenuUI(bool onOff, string type)
+    {
+        // check wich menu it is and activte it acordingly
+        if (type.Equals("gameMenu"))
+        {
+            foreach (GameObject menu in ingameMenuUI) { menu.SetActive(onOff); }
+        }
+        else if (type.Equals("startMenu"))
+        {
+            foreach (GameObject menu in menuUI) { menu.SetActive(onOff); }
+        }       
     }
 
     public void SelectSound(int soundNr)
@@ -28,20 +47,15 @@ public class SelectSoundByte : MonoBehaviour {
         currSound = sounds[soundNr]; //assign current sound
         SetButtonNameOnTint(currSound);
 
-        //Do prepartion when button pressed
-        soundButtons.SetActive(false);
-        backButton.SetActive(true);
-        tint.SetActive(false);
-        txtTint.SetActive(true);
+        SwitchMenuUI(true, "gameMenu");
+        SwitchMenuUI(false, "startMenu");
+
     }
 
     public void ReturnToMenu()
     {
-        //Preperations when returning to menu
-        soundButtons.SetActive(true);
-        backButton.SetActive(false);
-        tint.SetActive(true);
-        txtTint.SetActive(false);
+        SwitchMenuUI(false, "gameMenu");
+        SwitchMenuUI(true, "startMenu");
     }
 
     public void SetButtonNameOnTint(AudioSource audioName)
